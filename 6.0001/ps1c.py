@@ -12,36 +12,35 @@
 # 36 months. Since hitting this exactly is a challenge, we simply want your savings to be within $100 of 
 # the required down payment.
 annual_salary = int(input("Enter your starting annual salary: $"))
+total_cost = int(1000000)
 portion_down_payment = float(0.25)
+down_payment = (total_cost * portion_down_payment)
 current_savings = float(0)
 r = float(0.04)
-month_counter = int(0)
 semi_annual_raise_months = int(6)
+semi_annual_raise = float(0.07)
 high = 10000
 low = 0
 epsilon = 100
-total_cost = int(1000000)
-semi_annual_raise = float(0.07)
-down_payment = float(total_cost * portion_down_payment)
 step_count = int(0)
 
 while True:
     portion_saved = (low + high) / 2
+    working_salary = annual_salary
+    working_savings = current_savings
     for months in range(0,36):
-        current_savings += ((annual_salary/12) * portion_saved) / 10000 + (current_savings*r/12)
-        if months != 0 and months % semi_annual_raise_months == 0:
-            annual_salary += (annual_salary * semi_annual_raise)
-    if abs(current_savings - down_payment) <= epsilon:
-        print("The best savings rate to make your downpayment in 36 months is:", portion_saved, "or", (portion_saved / 100), "%")
+        working_savings += ((working_salary/12) * portion_saved) / 10000 + (working_savings*r/12)
+        if  months % semi_annual_raise_months == 0:
+            working_salary += (working_salary * semi_annual_raise)
+    if abs(working_savings - down_payment) <= epsilon:
+        print("The best savings rate to make your downpayment in 36 months is:", (portion_saved/100), "% or", (portion_saved / 10000))
         print("Steps in bisection search:", step_count)
         break
-    elif abs(current_savings - down_payment) > epsilon and current_savings > down_payment:
+    elif abs(working_savings - down_payment) > epsilon and working_savings > down_payment:
         high = portion_saved
-    elif abs(current_savings - down_payment) > epsilon and current_savings < down_payment:
+    elif abs(working_savings - down_payment) > epsilon and working_savings < down_payment:
         low = portion_saved
     if low == high:
         print("you can't pay this down in 3 years with you your current salary")
-        print("current savings:", current_savings)
-        print("Steps in bisection search:", step_count)
         break
     step_count += 1
