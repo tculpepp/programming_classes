@@ -11,35 +11,44 @@
 # You are now going to try to find the best rate of savings to achieve a down payment on a $1M house in 
 # 36 months. Since hitting this exactly is a challenge, we simply want your savings to be within $100 of 
 # the required down payment.
-annual_salary = int(input("Enter your starting annual salary: $"))
-total_cost = int(1000000) #total house cost
-portion_down_payment = float(0.25) #percentage down (as a decimal)
-down_payment = (total_cost * portion_down_payment) 
-r = float(0.04) #return on investments percentage (as decimal)
-semi_annual_raise_months = int(6) #number of months for the raise interval
-semi_annual_raise = float(0.07) #raise percentage (as decimal)
-high = 10000 #initial high limit for the bisection
-low = 0 #initial low limit for the bisection
-epsilon = 100 #allowable variance "slop" for the search
-step_count = int(0)
 
-while True: #this is a deliberate forver loop that we will break with if statements below
-    portion_saved = (low + high) / 2 #these three lines are all variables that reset every time the loop runs
+#user provided input
+annual_salary = int(input("Enter your starting annual salary: $"))
+
+#fixed variables
+total_cost = 1000000
+portion_down_payment = 0.25
+down_payment = total_cost * portion_down_payment
+current_savings = 0.0
+r = 0.04
+monthly_r = r / 12
+semi_annual_raise_months = 6
+semi_annual_raise = 0.07
+months_goal = 36
+
+#setup for the bisection
+high = 10000
+low = 0
+epsilon = 100 #acceptable margin of error for the answer
+step_count = 0
+
+while True:
+    step_count += 1
+    portion_saved = (high + low) // 2 #note to self: "//" is floor division.  In other words, only the integer is returned
     working_salary = annual_salary
-    current_savings = 0.0
-    for months in range(0,36): #run through a 36 month period to determine how much we will have in savings
-        current_savings += ((working_salary/12) * portion_saved) / 10000 + (current_savings*r/12)
+    working_savings = current_savings
+    for months in range(1,months_goal+1):
+        working_savings += ((working_salary/12) * (portion_saved / 10000)) + (working_savings*r/12)
         if  months % semi_annual_raise_months == 0:
-            working_salary += (working_salary * semi_annual_raise)
-    if abs(current_savings - down_payment) <= epsilon: #see if we are less than allowable slop hhave met our target
+            working_salary *= 1 + semi_annual_raise #note to self: the "*=" operator multiplies everything on the right by the left and THEN performs the math (addition in this case)
+    if abs(working_savings - down_payment) <= epsilon:
         print("The best savings rate to make your downpayment in 36 months is:", (portion_saved/100), "% or", (portion_saved / 10000))
         print("Steps in bisection search:", step_count)
         break
-    elif abs(current_savings - down_payment) > epsilon and current_savings > down_payment: #we overshot, so adjust the high limit
+    elif abs(working_savings - down_payment) > epsilon and working_savings > down_payment:
         high = portion_saved
-    elif abs(current_savings - down_payment) > epsilon and current_savings < down_payment: #we undershot, so adjust the low limit
+    elif abs(working_savings - down_payment) > epsilon and working_savings < down_payment:
         low = portion_saved
     if low == high:
         print("you can't pay this down in 3 years with you your current salary")
         break
-    step_count += 1 #if nothing caugh, itterate and do it again
