@@ -132,7 +132,68 @@ def hangman(secret_word):
     Follows the other limitations detailed in the problem write-up.
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    number_guesses = 6
+    letters_guessed = []
+    warnings_remaing = 3
+    guessed_word = ("_ " * len(secret_word))
+    vowels = "aeiou"
+    
+    print ("Welcome to the game Hangman!")
+    print ("I am thinking of a word that is", len(secret_word), "letters long.")
+    print ("You have", warnings_remaing, "warnings left.")
+    while number_guesses > 0:
+        no_warnings = "You have no warnings left so you lose one guess:"
+        used_letter_message = "Oops! You've already guessed that letter. "
+        not_alpha_message = "Oops! That is not a valid letter. "
+        warnings_left = "You now have " + str(warnings_remaing - 1) + " warnings left:"
+        available_letters = get_available_letters(letters_guessed)
+        print ("-------------")
+        print ("You have", number_guesses, "guesses left.")
+        print ("Available letters:", available_letters)
+        new_guess = str.lower(input("Please guess a letter: "))
+        if str.isalpha(new_guess) == True and new_guess in available_letters:
+            letters_guessed.extend ([new_guess])
+            if new_guess in secret_word:   
+                guessed_word = get_guessed_word(secret_word, letters_guessed)
+                print ("Good guess:", guessed_word)
+                if is_word_guessed(secret_word, letters_guessed) == True:
+                    won = True
+                    break
+            else:
+              if new_guess in vowels:
+                number_guesses -= 2
+              else:
+                number_guesses -= 1
+              print ("Oops! That letter is not in my word:", guessed_word)
+        elif str.isalpha(new_guess) == False:
+            warnings_remaing -= 1
+            if warnings_remaing >= 0:
+                print (not_alpha_message, warnings_left, guessed_word)
+            else:
+                number_guesses -= 1
+                number_warnings = 3
+                print (not_alpha_message, no_warnings, guessed_word)
+        elif new_guess not in available_letters:
+            warnings_remaing -= 1
+            if warnings_remaing >= 0:
+                print (used_letter_message, warnings_left, guessed_word)
+            else:
+                number_guesses -= 1
+                warnings_remaing = 3
+                print (used_letter_message, no_warnings, guessed_word)
+    print ("-------------")
+    if number_guesses <= 0:
+        print("Sorry, you ran out of guesses. The word was", secret_word)
+        print("")
+    elif won == True:
+        secret_word_chars = ""
+        for char in secret_word:
+          if char not in secret_word_chars:
+            secret_word_chars += char
+        score = number_guesses * len(secret_word_chars)
+        print("Congratulations, you won!")
+        print("Your total score for this game is:", score)
+        print("")
 
 
 
@@ -219,8 +280,8 @@ if __name__ == "__main__":
     # To test part 2, comment out the pass line above and
     # uncomment the following two lines.
     
-    #secret_word = choose_word(wordlist)
-    secret_word = "apple"
+    secret_word = choose_word(wordlist)
+    #secret_word = "apple"
     hangman(secret_word)
 
 ###############
