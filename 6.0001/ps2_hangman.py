@@ -61,14 +61,10 @@ def is_word_guessed(secret_word, letters_guessed):
       False otherwise
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    correct_guesses = 0
-    for guess in letters_guessed:
-      letter_occurance = secret_word.count(guess)
-      if letter_occurance >= 1:
-        correct_guesses += letter_occurance
-    if len(secret_word) <= correct_guesses:
-      return True
-    else: return False
+    for char in secret_word:
+      if char not in letters_guessed:
+        return False
+    return True
 
 
 
@@ -97,7 +93,8 @@ def get_available_letters(letters_guessed):
       yet been guessed.
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    import string
+    if letters_guessed == []:
+      return string.ascii_lowercase
     letters_available = ""
     for char in string.ascii_lowercase:
       if char not in letters_guessed:
@@ -171,7 +168,7 @@ def hangman(secret_word):
                 print (not_alpha_message, warnings_left, guessed_word)
             else:
                 number_guesses -= 1
-                number_warnings = 3
+                warnings_remaing = 3
                 print (not_alpha_message, no_warnings, guessed_word)
         elif new_guess not in available_letters:
             warnings_remaing -= 1
@@ -217,7 +214,22 @@ def match_with_gaps(my_word, other_word):
         False otherwise: 
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    my_word_stripped = my_word.replace(' ', '')
+    index = 0
+    if len(my_word_stripped) == len(other_word):
+      for char in my_word_stripped:
+          if char == other_word[index]:
+            match = True
+            index += 1
+          elif char == "_" and other_word.find(char) == -1:
+            match = True
+            index += 1
+          else: 
+            match = False
+            break
+    else: match = False
+    return match
+
 
 
 
